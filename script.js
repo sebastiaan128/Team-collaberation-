@@ -1,0 +1,5 @@
+function RandomWord() {
+}
+
+function enterWord() {
+}
