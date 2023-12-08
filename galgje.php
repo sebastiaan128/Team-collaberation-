@@ -9,6 +9,14 @@
 </head>
 <body class="bg-primary">
     <h1 class="text-center" >Galgje</h1>
-    
+    <div class="woord text-center mt-5">
+    <p>Wil je zelf een woord kiezen of een random woord?</p>
+    </div>
+    <div class="button d-flex justify-content-center align-items-center py-1">
+        <button type="button">Random</button>
+        <div class="button1 d-flex px-1">
+        <button type="button">Zelf kiezen</button>
+        </div>
+    </div>
 </body>
 </html>
