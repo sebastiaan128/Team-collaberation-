@@ -11,7 +11,7 @@
     
         <div class=" d-flex justify-content-center align-items-center py-1">
         <input type="text" id="input" placeholder="Voer hier je woord in">
-        <button type="button" onclick="checkWord()">Check</button> 
+        <button type="button" >Check</button> 
 
 </body>
 </html>
