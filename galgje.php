@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <div class="button1 d-flex px-3">
             <form method="post">
-                
+            
                 <button type="submit" name="2-players" class="rounded btn btn-light ">2 players</button>
             </form>
         </div>
