@@ -30,11 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="button rounded d-flex justify-content-center align-items-center py-1">
         
     <form method="post">
-            <button type="submit" name="1-player" class="rounded">1 player</button>
+            <button type="submit" name="1-player" class="rounded btn btn-light">1 player</button>
         </form>
         <div class="button1 d-flex px-3">
             <form method="post">
-                <button type="submit" name="2-players" class="rounded ">2 players</button>
+                
+                <button type="submit" name="2-players" class="rounded btn btn-light ">2 players</button>
             </form>
         </div>
 
