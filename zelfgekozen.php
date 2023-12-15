@@ -18,17 +18,22 @@
 
     
 <div class="alfabet mx-auto">
-    <?php 
-    if(isset($_GET['name'])) {
-        $name = $_GET['name'];
-        echo $name;
+<?php
+if(isset($_GET['name'])) {
+    $name = $_GET['name'];
+    echo $name;
+}
+
+if(isset($_GET['letter'])) {
+    $letter = $_GET['letter'];
+    if(strpos($name, $letter) !== false) {
+        echo "The letter '$letter' is present in the name.";
     }
+}
   
-    $disabledLetters = [];
     $letters = range('A', 'Z');
     foreach ($letters as $letter) {
-        $disabled = in_array($letter, $disabledLetters) ? 'disabled' : '';
-        echo '<button type="submit" name="letter" value="' . $letter . '" class="rounded btn btn-light mx-1' . $disabled . '">' . $letter . '</button>';
+        echo '<button type="submit" name="letter" value="' . $letter . '" class="rounded btn btn-light mx-1">' . $letter . '</button>';
     }
     ?>
     </div>
