@@ -1,23 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galgje</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-</head>
-<body class="kleur bg-info">
+<?php
 
-    <?php
-    $woordenlijst = ['appel', 'banaan', 'citroen', 'druif', 'kiwi', 'mango', 'perzik'];
+session_start();
 
-    $woord = $woordenlijst[array_rand($woordenlijst)];
+$words = array("banana", "apple", "orange", "strawberry", "pineapple");
+$woord = $_SESSION['woord'] ?? '';
+$geradenLetters = $_SESSION['geradenLetters'] ?? [];
+$incorrectGuesses = $_SESSION['incorrectGuesses'] ?? 0;
 
-    $geradenLetters = []; 
+if (empty($woord)) {
+    $woord = strtoupper($words[array_rand($words)]);
+    $_SESSION['woord'] = $woord;
+    $_SESSION['geradenLetters'] = [];
+    $_SESSION['incorrectGuesses'] = 0;
+}
 
-    function tekenGalg($fouten) {
-        $galg[0] = <<<ABC
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['letter'])) {
+        $letter = strtoupper($_POST['letter']); // Zorg ervoor dat de geraden letter altijd in hoofdletters wordt opgeslagen
+        $geradenLetters[] = $letter;
+        if (!in_array($letter, str_split($woord))) {
+            $incorrectGuesses++;
+        }
+        $_SESSION['geradenLetters'] = $geradenLetters;
+        $_SESSION['incorrectGuesses'] = $incorrectGuesses;
+    } elseif (isset($_POST['guess'])) {
+        $guess = strtoupper($_POST['guess']);
+        if ($guess === $woord) {
+            echo '<h2 class="text-center text-success">Goed zo</h2>';
+            $woord = '';
+            $_SESSION['woord'] = '';
+            $_SESSION['geradenLetters'] = [];
+            $_SESSION['incorrectGuesses'] = 0;
+        } else {
+            $incorrectGuesses = 6;
+            $_SESSION['incorrectGuesses'] = $incorrectGuesses;
+        }
+    } elseif (isset($_POST['reset'])) {
+        $woord = '';
+        $_SESSION['woord'] = '';
+        $_SESSION['geradenLetters'] = [];
+        $_SESSION['incorrectGuesses'] = 0;
+    }
+}
+
+function tekenGalg($incorrectGuesses) {
+    $galg = [
+        '<pre>
         +---+
         |   | 
             |
@@ -25,9 +53,8 @@
             |     
             |
             |
-       =======
-       ABC;
-       $galg[1] = <<<ABC
+       =======</pre>',
+       '<pre>
         +---+
         |   | 
         o   |
@@ -35,9 +62,8 @@
             |     
             |
             |
-       =======
-       ABC;
-       $galg[2] = <<<ABC
+       =======</pre>',
+       '<pre>
         +---+
         |   | 
         o   |
@@ -45,9 +71,8 @@
             |     
             |
             |
-       =======
-       ABC;
-       $galg[3] = <<<ABC
+       =======</pre>',
+       '<pre>
         +---+
         |   | 
         o   |
@@ -55,9 +80,8 @@
             |     
             |
             |
-       =======
-       ABC;
-       $galg[4] = <<<ABC
+       =======</pre>',
+       '<pre>
         +---+
         |   | 
         o   |
@@ -65,9 +89,17 @@
             |     
             |
             |
-       =======
-       ABC;
-       $galg[5] = <<<ABC
+       =======</pre>',
+       '<pre>
+        +---+
+        |   | 
+        o   |
+       /|\  |
+       /    |     
+            |
+            |
+       =======</pre>',
+       '<pre>
         +---+
         |   | 
         o   |
@@ -75,72 +107,84 @@
        / \  |     
             |
             |
-       =======
-       ABC;
-       $galg[6] = <<<ABC
-        +---+
-        |   | 
-        o   |
-       /|\  |
-       / \  |     
-            |
-            |
-       =======
-       ABC;
-    }
+       =======</pre>'
+    ];
 
-    function weergaveWoord($woord, $geradenLetters) {
-        $output = '';
+    return $galg[$incorrectGuesses];
+}
 
-        foreach (str_split($woord) as $letter) {
-            if (in_array($letter, $geradenLetters)) {
-                $output .= $letter . ' ';
-            } else {
-                $output .= '_ ';
-            }
+function weergaveWoord($woord, $geradenLetters) {
+    $output = '';
+
+    foreach (str_split($woord) as $letter) {
+        if (in_array($letter, $geradenLetters)) {
+            $output .= $letter . ' ';
+        } else {
+            $output .= '_ ';
         }
-
-        return $output;
     }
 
-    function weergaveAlfabet($geradenLetters) {
-        $alfabet = range('A', 'Z');
-        $output = '';
+    return $output;
+}
 
-        foreach ($alfabet as $letter) {
-            if (in_array($letter, $geradenLetters)) {
+function weergaveAlfabet($geradenLetters, $woord) {
+    $alfabet = range('A', 'Z');
+    $output = '';
+
+    foreach ($alfabet as $letter) {
+        if (in_array($letter, $geradenLetters)) {
+            if (in_array($letter, str_split($woord))) {
                 $output .= '<button class="btn btn-success mx-1" disabled>' . $letter . '</button>';
             } else {
-                $output .= '<button class="btn btn-light mx-1" onclick="raadLetter(\'' . $letter . '\')">' . $letter . '</button>';
+                $output .= '<button class="btn btn-danger mx-1" disabled>' . $letter . '</button>';
             }
-        }
-
-        return $output;
-    }
-
-    if(isset($_GET['name'])) {
-        $name = $_GET['name'];
-        echo $name;
-    }
-
-    if(isset($_GET['letter'])) {
-        $letter = $_GET['letter'];
-        if(strpos($woord, $letter) !== false) {
-            $geradenLetters[] = $letter;
+        } else {
+            $output .= '<form method="post" class="d-inline-block"><input type="hidden" name="letter" value="' . $letter . '"><button type="submit" class="btn btn-light mx-1">' . $letter . '</button></form>';
         }
     }
+
+    return $output;
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galgje - Two Player</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-info">
+
+<h1 class="text-center">Galgje - Two Player</h1>
+
+<div class="d-flex w-100 justify-content-center mt-4">
+    <?php 
+        if ($incorrectGuesses >= 6) {
+            echo '<h2 class="text-center text-danger">YOU LOST, LOSER!</h2>';
+        } else {
+            echo tekenGalg($incorrectGuesses); 
+        }
     ?>
-    <div class="d-flex w-100">
-        <div class="alfabet mx-auto">
-            <?php
-            //  woord weergave
-            echo weergaveWoord($woord, $geradenLetters);
+</div>
 
-            //  Weergave alfabet
-            echo weergaveAlfabet($geradenLetters);
-            ?>
-        </div>
+<div class="d-flex w-100">
+    <div class="woord mx-auto my-4">
+        <h3 class="text-center"><?php echo weergaveWoord($woord, $geradenLetters); ?></h3>
     </div>
+</div>
+
+<div class="d-flex w-100">
+    <div class="alfabet mx-auto">
+        <?php echo weergaveAlfabet($geradenLetters, $woord); ?>
+    </div>
+</div>
+
+<form method="post" class="text-center mt-4">
+    <button type="submit" name="reset" class="btn btn-danger">Reset Game</button>
+</form>
 
 </body>
 </html>
