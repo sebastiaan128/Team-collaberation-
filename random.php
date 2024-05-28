@@ -163,7 +163,7 @@ function weergaveAlfabet($geradenLetters, $woord) {
 <div class="d-flex w-100 justify-content-center mt-4">
     <?php 
         if ($incorrectGuesses >= 6) {
-            echo '<h2 class="text-center text-danger">YOU LOST, LOSER!</h2>';
+            echo '<h2 class="text-center text-danger">JIJ VERLIEST L!</h2>';
         } else {
             echo tekenGalg($incorrectGuesses); 
         }
